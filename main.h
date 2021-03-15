@@ -6,7 +6,9 @@
 
 int height, width;
 std::vector<unsigned char> image;
+std::vector<unsigned char> fileHeader;
+std::vector<unsigned char> infoHeader;
 void setPixel(unsigned char red, unsigned char green, unsigned char blue, int y, int x);
 void generateBitmapImage(int height, int width, char* imageFileName);
-unsigned char* createBitmapFileHeader(int height, int stride);
-unsigned char* createBitmapInfoHeader(int height, int width);
+void createBitmapFileHeader(int height, int stride);
+void createBitmapInfoHeader(int height, int width);
