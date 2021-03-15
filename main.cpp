@@ -7,26 +7,30 @@
 int main ()
 {
     PerlinNoise::generateNewPermutation(time(nullptr));
-    int height = 2160;
-    int width = 3840;
-    std::vector<unsigned char> image(height*width*BYTES_PER_PIXEL);
+    height = 2160;
+    width = 3840;
+    image.resize(height*width*BYTES_PER_PIXEL);
     char* imageFileName = (char*) "bitmapImage.bmp";
 
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
-            image[(i*width+j)*BYTES_PER_PIXEL + 2] = (unsigned char) ( 214*x + 0 );             ///red
-            image[(i*width+j)*BYTES_PER_PIXEL + 1] = (unsigned char) ( 2*x + 56 );             ///green
-            image[(i*width+j)*BYTES_PER_PIXEL + 0] = (unsigned char) ( 112*x + 168 );             ///blue
+            setPixel(214*x,2*x + 56,112*x + 168, i, j);
         }
     }
 
-    generateBitmapImage(image, height, width, imageFileName);
+    generateBitmapImage(height, width, imageFileName);
     return 0;
 }
 
+void setPixel(unsigned char red, unsigned char green, unsigned char blue, int y, int x){
+    image[(y*width+x)*BYTES_PER_PIXEL + 2] = red;
+    image[(y*width+x)*BYTES_PER_PIXEL + 1] = green;
+    image[(y*width+x)*BYTES_PER_PIXEL + 0] = blue;
+}
 
-void generateBitmapImage (std::vector<unsigned char> image, int height, int width, char* imageFileName)
+
+void generateBitmapImage (int height, int width, char* imageFileName)
 {
     int widthInBytes = width * BYTES_PER_PIXEL;
 
