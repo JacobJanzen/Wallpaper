@@ -1,7 +1,7 @@
 CC=clang++
 CFLAGS=--std=c++11
 
-objects = PerlinNoise.o
+objects = PerlinNoise.o Bitmap.o
 
 # this rule will build A2 as the executable from the object files
 all: main.o $(objects)
