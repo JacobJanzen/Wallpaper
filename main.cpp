@@ -1,3 +1,4 @@
+#include <fstream>
 #include <stdio.h>
 #include <time.h>
 #include "main.h"
@@ -11,9 +12,8 @@ int main ()
     std::vector<unsigned char> image(height*width*BYTES_PER_PIXEL);
     char* imageFileName = (char*) "bitmapImage.bmp";
 
-    int i, j;
-    for (i = 0; i < height; i++) {
-        for (j = 0; j < width; j++) {
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
             double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
             image[(i*width+j)*BYTES_PER_PIXEL + 2] = (unsigned char) ( 214*x + 0 );             ///red
             image[(i*width+j)*BYTES_PER_PIXEL + 1] = (unsigned char) ( 2*x + 56 );             ///green
@@ -35,21 +35,21 @@ void generateBitmapImage (std::vector<unsigned char> image, int height, int widt
 
     int stride = (widthInBytes) + paddingSize;
 
-    FILE* imageFile = fopen(imageFileName, "wb");
+    std::fstream file;
+
+    file.open(imageFileName, std::fstream::out | std::ios::binary);
 
     unsigned char* fileHeader = createBitmapFileHeader(height, stride);
-    fwrite(fileHeader, 1, FILE_HEADER_SIZE, imageFile);
+    file.write((const char *)fileHeader, FILE_HEADER_SIZE);
 
     unsigned char* infoHeader = createBitmapInfoHeader(height, width);
-    fwrite(infoHeader, 1, INFO_HEADER_SIZE, imageFile);
+    file.write((const char *)infoHeader, INFO_HEADER_SIZE);
 
-    int i;
-    for (i = 0; i < height; i++) {
-        fwrite(&image[i*widthInBytes], BYTES_PER_PIXEL, width, imageFile);
-        fwrite(padding, 1, paddingSize, imageFile);
+    for(int i = 0; i < height; i++){
+        file.write((const char *)(&(image[i*widthInBytes])), BYTES_PER_PIXEL * width);
     }
 
-    fclose(imageFile);
+    file.close();
 }
 
 unsigned char* createBitmapFileHeader (int height, int stride)
