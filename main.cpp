@@ -15,6 +15,16 @@ int main (){
         {155,79,150},
         {0,56,168}
     };
+    colour max = {
+        214,
+        2,
+        112
+    };
+    colour min = {
+        0,
+        56,
+        168
+    };
     gradMode(colours);
     image->generateBitmapImage();
     return 0;
