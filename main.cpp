@@ -6,26 +6,57 @@
 
 int main (){
     PerlinNoise::generateNewPermutation(time(nullptr));
+
+    // set this variable to name the output file
     char* imageFileName = (char*) "bitmapImage.bmp";
+
+    // change these to change dimensions of output image
     height = 2160;
     width = 3840;
     image = new Bitmap(height,width,imageFileName);
+
+
+    // use the following vector for grad mode
+    // the image will feature a gradient from
+    // colour1 to colour2 to colour3
     colour colours[3] = {
-        {214,2,112},
-        {155,79,150},
-        {0,56,168}
+        {   // colour 1
+            214,    // red
+            2,      // green
+            112     // blue
+        },
+        {   // colour 2
+            155,    // red
+            79,     // green
+            150     // blue
+        },
+        {   // colour 3
+            0,      // red
+            56,     // green
+            168     // blue
+        }
     };
+
+    // use the following structs for classic mode
+    // to set the basic gradient from min to max
     colour max = {
-        214,
-        2,
-        112
+        (unsigned char)214, // red
+        (unsigned char)2,   // green
+        (unsigned char)112  // blue
     };
     colour min = {
-        0,
-        56,
-        168
+        (unsigned char)0,   // red
+        (unsigned char)56,  // green
+        (unsigned char)168  // blue
     };
-    gradMode(colours);
+
+
+    // to use a different mode, 
+    // uncomment the desired mode 
+    // and comment the others
+    classicMode(max,min);
+//  psychedelicMode();
+//  gradMode(colours);
     image->generateBitmapImage();
     return 0;
 }
@@ -34,7 +65,9 @@ void classicMode(colour max, colour min){
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
-            image->setPixel(max.red*x+min.red, max.green*x+min.green, max.blue*x+min.blue, i, j);
+
+            // casting to unsigned char causes some weird voodoo to happen that makes the ripples and large blobs more common
+            image->setPixel((unsigned char)(max.red*x+min.red), (unsigned char)(max.green*x+min.green), (unsigned char)(max.blue*x+min.blue), i, j);
         }
     }
 }
@@ -42,6 +75,7 @@ void classicMode(colour max, colour min){
 void psychedelicMode(){
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
+            // generate three slightly offset slices
             double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
             double y = PerlinNoise::perlin((double)i/height,(double)j/width,1.0/3);
             double z = PerlinNoise::perlin((double)i/height,(double)j/width,2.0/3);
@@ -54,6 +88,14 @@ void gradMode(colour colours[3]){
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
+
+            // generate a gradient
+            // since the range for perlin is ~-4 to ~4, 
+            // and interpolate() only expects numbers between 0 and 1,
+            // it will overflow on occasion. This keeps it from being a 
+            // boring gradient with no details. If a true gradient is 
+            // desired, in "x/-2" and "x/2", the 2s can be changed to 4.2
+            // and it should never overflow.
             if(x < 0)
                 interpolate(x/-2, colours[0], colours[1]);
             else
