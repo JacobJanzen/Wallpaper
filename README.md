@@ -1,3 +1,3 @@
 # Wallpaper
 
-Uses my failed Perlin Noise project to generate cool looking lava lamp like random Wallpapers.
+Generates random Bitmap images based on overflowing the value of the colours with a procedural algorithm
