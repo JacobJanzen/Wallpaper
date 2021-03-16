@@ -7,27 +7,50 @@
 int main (){
     PerlinNoise::generateNewPermutation(time(nullptr));
     char* imageFileName = (char*) "bitmapImage.bmp";
-    int height = 2160;
-    int width = 3840;
+    height = 2160;
+    width = 3840;
+    image = new Bitmap(height,width,imageFileName);
+    colour colours[3] = {
+        {214,2,112},
+        {155,79,150},
+        {0,56,168}
+    };
+    gradMode(colours);
+    image->generateBitmapImage();
+    return 0;
+}
 
-    colour col1 = {214, 2, 112};
-    colour col2 = {155, 79, 150};
-    colour col3 = {0, 56, 168};
-
-    Bitmap *image = new Bitmap(height,width,imageFileName);
+void classicMode(colour max, colour min){
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
-            if(x < .5)
-                interpolate(x*2, col1, col2);
+            image->setPixel(max.red*x+min.red, max.green*x+min.green, max.blue*x+min.blue, i, j);
+        }
+    }
+}
+
+void psychedelicMode(){
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
+            double y = PerlinNoise::perlin((double)i/height,(double)j/width,1.0/3);
+            double z = PerlinNoise::perlin((double)i/height,(double)j/width,2.0/3);
+            image->setPixel(255*x, 255*y, 255*z, i, j);
+        }
+    }
+}
+
+void gradMode(colour colours[3]){
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
+            if(x < 0)
+                interpolate(x/-2, colours[0], colours[1]);
             else
-                interpolate((x-.5)*2, col2, col3);
+                interpolate(x/2, colours[1], colours[2]);
             image->setPixel(outColour.red, outColour.green, outColour.blue, i, j);
         }
     }
-
-    image->generateBitmapImage();
-    return 0;
 }
 
 void interpolate(double val, colour colour1, colour colour2){
