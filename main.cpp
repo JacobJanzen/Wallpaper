@@ -90,16 +90,10 @@ void gradMode(colour colours[3]){
             double x = PerlinNoise::perlin((double)i/height,(double)j/width,0);
 
             // generate a gradient
-            // since the range for perlin is ~-4 to ~4, 
-            // and interpolate() only expects numbers between 0 and 1,
-            // it will overflow on occasion. This keeps it from being a 
-            // boring gradient with no details. If a true gradient is 
-            // desired, in "x/-2" and "x/2", the 2s can be changed to 4.2
-            // and it should never overflow.
             if(x < 0)
-                interpolate(x/-2, colours[0], colours[1]);
+                interpolate(x/-5, colours[0], colours[1]);
             else
-                interpolate(x/2, colours[1], colours[2]);
+                interpolate(x/5, colours[1], colours[2]);
             image->setPixel(outColour.red, outColour.green, outColour.blue, i, j);
         }
     }
